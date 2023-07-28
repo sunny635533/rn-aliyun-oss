@@ -1,2 +1,27 @@
-# rn-aliyun-oss
-aliyun oss的android和ios的sdk封装，react-native项目能直接使用上传文件的功能
+# react-native-oss
+
+for alioss
+
+## Installation
+
+```sh
+npm install react-native-oss
+```
+
+## Usage
+
+```js
+import Oss from "react-native-oss";
+
+// ...
+
+const result = await Oss.multiply(3, 7);
+```
+
+## Contributing
+
+See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+
+## License
+
+MIT

@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.ts"],"names":["default","AliyunOss"],"mappings":"AAAA,cAAc,SAAd;AAEA,SAASA,OAAO,IAAIC,SAApB,QAAqC,aAArC","sourcesContent":["export * from './types';\n\nexport { default as AliyunOss } from './AliyunOss'\n"]}
