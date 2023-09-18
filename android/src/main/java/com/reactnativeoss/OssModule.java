@@ -7,6 +7,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.alibaba.sdk.android.oss.ClientConfiguration;
 import com.alibaba.sdk.android.oss.ClientException;
@@ -28,6 +29,7 @@ import com.alibaba.sdk.android.oss.model.PutObjectResult;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
@@ -120,6 +122,7 @@ public class OssModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void asyncUpload(String bucketName, String ossFile, String sourceFile, final Promise promise) {
+    String fileSourcePath = sourceFile;
     if (sourceFile != null) {
       sourceFile = sourceFile.replace("file://", "");
     }
@@ -133,13 +136,13 @@ public class OssModule extends ReactContextBaseJavaModule {
       @Override
       public void onProgress(PutObjectRequest request, long currentSize, long totalSize) {
         Log.d("PutObject", "currentSize: " + currentSize + " totalSize: " + totalSize);
-//        String str_currentSize = Long.toString(currentSize);
-//        String str_totalSize = Long.toString(totalSize);
-//        WritableMap onProgressValueData = Arguments.createMap();
-//        onProgressValueData.putString("currentSize", str_currentSize);
-//        onProgressValueData.putString("totalSize", str_totalSize);
-//        getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-//                .emit("uploadProgress", onProgressValueData);
+        String str_currentSize = Long.toString(currentSize);
+        String str_totalSize = Long.toString(totalSize);
+        WritableMap onProgressValueData = Arguments.createMap();
+        onProgressValueData.putString("currentSize", str_currentSize);
+        onProgressValueData.putString("totalSize", str_totalSize);
+        onProgressValueData.putString("filePath",fileSourcePath);
+        sendEvent(getReactApplicationContext(),"uploadProgress",onProgressValueData);
       }
     });
 
@@ -159,6 +162,17 @@ public class OssModule extends ReactContextBaseJavaModule {
     });
     Log.d("AliyunOSS", "OSS uploadObjectAsync ok!");
 
+  }
+
+
+  @ReactMethod
+  public void addListener(String type) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
+
+  @ReactMethod
+  public void removeListeners(int type) {
+    // Keep: Required for RN built in Event Emitter Calls.
   }
 
   @ReactMethod
@@ -267,33 +281,18 @@ public class OssModule extends ReactContextBaseJavaModule {
     });
   }
 
-  public static String bitmapToBase64(Bitmap bitmap) {
 
-    String result = null;
-    ByteArrayOutputStream baos = null;
-    try {
-        if (bitmap != null) {
-            baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-
-            baos.flush();
-            baos.close();
-
-            byte[] bitmapBytes = baos.toByteArray();
-            result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            if (baos != null) {
-                baos.flush();
-                baos.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    return result;
-}
+  /**
+   * 原生发送事件到JS中
+   * @param reactContext
+   * @param eventName
+   * @param params
+   */
+  private void sendEvent(ReactContext reactContext,
+                         String eventName,
+                         @Nullable WritableMap params) {
+    reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(eventName, params);
+  }
 }

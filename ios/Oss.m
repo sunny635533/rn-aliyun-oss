@@ -26,7 +26,7 @@ RCT_EXPORT_METHOD(initWithAppKey:(NSString*) accessKeyId
     conf.maxRetryCount = [RCTConvert int:configuration[@"maxRetryCount"]]; //default 3
     conf.timeoutIntervalForRequest = [RCTConvert double:configuration[@"timeoutIntervalForRequest"]]; //default 30
     conf.timeoutIntervalForResource = [RCTConvert double:configuration[@"timeoutIntervalForResource"]]; //default 24 * 60 * 60
-    
+
     client = [[OSSClient alloc] initWithEndpoint:endpoint credentialProvider:credential clientConfiguration:conf];
 }
 
@@ -49,7 +49,10 @@ RCT_EXPORT_METHOD(asyncUpload:(NSString*)bucketName
     put.uploadingData = data; // 直接上传NSData
     
     put.uploadProgress = ^(int64_t bytesSent, int64_t totalByteSent, int64_t totalBytesExpectedToSend) {
-        NSLog(@"%lld, %lld, %lld", bytesSent, totalByteSent, totalBytesExpectedToSend);
+//        NSLog(@"=== asyncUpload ==== %lld, %lld, %lld", bytesSent, totalByteSent, totalBytesExpectedToSend);
+        [self sendEventWithName:@"uploadProgress" body:@{@"bytesSent":[NSString stringWithFormat:@"%lld",bytesSent],
+                                                                        @"currentSize": [NSString stringWithFormat:@"%lld",totalByteSent],
+                                                         @"totalSize": [NSString stringWithFormat:@"%lld",totalBytesExpectedToSend],@"filePath":uploadFilePath}];
     };
 
     OSSTask * putTask = [client putObject:put];
@@ -70,6 +73,11 @@ RCT_EXPORT_METHOD(asyncUpload:(NSString*)bucketName
 // [putTask waitUntilFinished];
 }
 
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"uploadProgress"];
+}
 
 //异步下载 参考项目：https://github.com/SpadeGod/react-native-aliyun-oss/blob/master/ios/RCTAliyunOSS/RCTAliyunOSS.m
 // https://github.com/aliyun/aliyun-oss-react-native/blob/master/ios/RNAliyunOSS%2BAUTH.m

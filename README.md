@@ -5,14 +5,17 @@ for alioss
 ## Installation
 
 ```sh
-yarn add react-native-oss
+npm install react-native-oss
 ```
 
 ## Usage
 
 ```js
+import Oss from "react-native-oss";
 
+// ...
 
+const result = await Oss.multiply(3, 7);
 ```
 
 ## Contributing
