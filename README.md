@@ -80,6 +80,24 @@ export default class OssBusiness {
 }
 
 ```
+上传进度：
+```
+subscription = null;//上传进度的事件
+
+//上传进度
+  addProgressListener() {
+    if (!this.subscription) {//如果没有监听过，需要注册
+      const eventEmitter = new NativeEventEmitter(NativeModules.Oss);
+      this.subscription = eventEmitter.addListener(
+        'uploadProgress',
+        (res) => {//{"currentSize": "153600", "totalSize": "155416","filePath":""}
+})
+}
+ componentWillUnmount() {
+    this.subscription && this.subscription.remove();
+    this.subscription = null;
+  }
+```
 
 ## Contributing
 
