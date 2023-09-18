@@ -5,7 +5,7 @@ for alioss
 ## Installation
 没有上传到npm服务器上，只能在package.json 指定代码路径
 ```sh
-"rn-aliyun-oss":git@github.com/sunny635533/rn-aliyun-oss.git
+"rn-aliyun-oss":"git@github.com/sunny635533/rn-aliyun-oss.git"
 ```
 
 ## Usage
